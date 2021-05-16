@@ -442,8 +442,7 @@ int set_up_device(char * dev_str)
   if (ret < 0)
   {
     printf("Failed to set simple pairing mode\n");
-    hci_close_dev(dd);
-    return -1;
+    printf("Warning: make sure secure simple pairing mode is disabled\n");
   }
 
   hci_close_dev(dd);
