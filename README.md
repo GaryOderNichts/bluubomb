@@ -20,7 +20,7 @@ Don't worry if building the emulator itself fails due to missing SDL headers. Ju
 1. Run the custom built bluetoothd `sudo ./bluez-4.101/dist/sbin/bluetoothd -d -n`
 1. Download the `bluubomb` binary and the kernel binary of your choice from the [releases page](https://github.com/GaryOderNichts/bluubomb/releases).
 Take a look at [Kernel binaries](#kernel-binaries) for more information.
-1. Make the bluubomb file executable by running `sudo chmod +x bluubomb`
+1. Make the bluubomb file executable by running `chmod +x bluubomb`
 1. Power on the Wii U and press the sync button.
 1. Run `sudo ./bluubomb arm_kernel.bin` and wait for the pairing process to complete.  
 This might take a minute.  
