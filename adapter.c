@@ -371,11 +371,14 @@ int set_up_simple_pairing_mode(int dd)
     return -1;
   }
 
-  ret = hci_write_simple_pairing_mode(dd, 0, HCI_TIMEOUT);
-  if (ret < 0)
+  if (original_simple_pairing_mode != 0)
   {
-    fprintf(stderr, "Can't write simple pairing mode: %s (%d)\n", strerror(errno), errno);
-    return -1;
+    ret = hci_write_simple_pairing_mode(dd, 0, HCI_TIMEOUT);
+    if (ret < 0)
+    {
+      fprintf(stderr, "Can't write simple pairing mode: %s (%d)\n", strerror(errno), errno);
+      return -1;
+    }
   }
 
   return 0;
@@ -385,11 +388,14 @@ int restore_simple_pairing_mode(int dd)
 {
   int ret;
 
-  ret = hci_write_simple_pairing_mode(dd, original_simple_pairing_mode, HCI_TIMEOUT);
-  if (ret < 0)
+  if (original_simple_pairing_mode != 0)
   {
-    fprintf(stderr, "Can't restore simple pairing mode: %s (%d)\n", strerror(errno), errno);
-    return -1;
+    ret = hci_write_simple_pairing_mode(dd, original_simple_pairing_mode, HCI_TIMEOUT);
+    if (ret < 0)
+    {
+      fprintf(stderr, "Can't restore simple pairing mode: %s (%d)\n", strerror(errno), errno);
+      return -1;
+    }
   }
 
   return 0;
