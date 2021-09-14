@@ -1,21 +1,23 @@
-.PHONY:	all clean arm_kernel_loadfile arm_kernel_fw_launcher arm_kernel_region_free
+.PHONY:	all clean arm_kernel arm_user sd_kernels
 
-all: bluubomb arm_kernel_loadfile arm_kernel_fw_launcher arm_kernel_region_free
+all: arm_user arm_kernel bluubomb sd_kernels
+	@echo All done!
 
 clean:
+	@$(MAKE) --no-print-directory -C arm_user clean
+	@$(MAKE) --no-print-directory -C arm_kernel clean
 	rm -f bluubomb
-	@$(MAKE) --no-print-directory -C arm_kernel_loadfile clean
-	@$(MAKE) --no-print-directory -C arm_kernel_fw_launcher clean
-	@$(MAKE) --no-print-directory -C arm_kernel_region_free clean
+	@$(MAKE) -j1 --no-print-directory -C sd_kernels clean
+
+arm_user:
+	@$(MAKE) -j1 --no-print-directory -C arm_user
+
+arm_kernel:
+	@$(MAKE) -j1 --no-print-directory -C arm_kernel
 
 bluubomb: bluubomb.c adapter.c bdaddr.c sdp.c
 	gcc -std=gnu11 -Wall -o bluubomb bluubomb.c adapter.c bdaddr.c sdp.c -lbluetooth
 
-arm_kernel_loadfile:
-	@$(MAKE) -j1 --no-print-directory -C arm_kernel_loadfile
-
-arm_kernel_fw_launcher:
-	@$(MAKE) -j1 --no-print-directory -C arm_kernel_fw_launcher
-
-arm_kernel_region_free:
-	@$(MAKE) -j1 --no-print-directory -C arm_kernel_region_free
+sd_kernels:
+	@echo Building SD kernels...
+	@$(MAKE) -j1 --no-print-directory -C sd_kernels

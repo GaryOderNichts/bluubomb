@@ -1,8 +1,7 @@
 OUTPUT_ARCH(arm)
 
-SECTIONS
-{
-    . = (0x08135000);
+SECTIONS {
+    . = (0x11f85800);
 
     .text : {
         crt0.o(.init)
@@ -14,13 +13,11 @@ SECTIONS
     .data : {
         *(.data*)
     }
-    .bss : {
+    /* .bss : {
         *(.bss*)
-        *(COMMON*)
-    }
+    } */
 
     /DISCARD/ : {
         *(*);
     }
 }
-

@@ -56,8 +56,9 @@ int MCP_ReadCOSXml_patch(uint32_t u1, uint32_t u2, MCPPPrepareTitleInfo *xmlData
 {
     int res = real_MCP_ReadCOSXml_patch(u1, u2, xmlData);
         
-    // Give us sd access!
-    xmlData->permissions[4].mask = 0xFFFFFFFFFFFFFFFF;
+    for (uint32_t i = 0; i < 19; i++) {                    
+        xmlData->permissions[i].mask = 0xFFFFFFFFFFFFFFFF;
+    }
 
     return res;
 }

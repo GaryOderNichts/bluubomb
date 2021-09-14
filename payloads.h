@@ -286,9 +286,7 @@ uint32_t final_rop_chain[] = {
     0x11f82f60, // set_fault_behavior (privileged stack pivot)
     0x00000000,
     0x00000000,
-    /* recovering ios_pad is still kind of broken so this just crashes it
-       TODO: properly recover it */
-    0xdeadbeef, //0x11f85800, // jump to arm_user
+    0x11f85800, // jump to arm_user
 };
 
 /* just a payload I used for testing */

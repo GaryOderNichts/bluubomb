@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#define ALIGNAS(x, align)  (((x) + ((align) - 1)) & ~((align) - 1))
+
 // Kernel functions
 
 #define kernel_memcpy               ((void* (*)(void*, const void*, int)) 0x08131D04)

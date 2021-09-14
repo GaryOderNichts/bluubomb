@@ -1,12 +1,11 @@
 .vscode/
-arm_kernel_fw_launcher/build/
-arm_kernel_region_free/build/
-arm_kernel_loadfile/build
-arm_kernel_loadfile/mcp/build
+sd_kernels/out
+sd_kernels/sd_kernels.zip
+
+**/build/
 
 bluubomb
 *.bin
 *.bin.h
 *.elf
 *_syms.h
-*.rpx

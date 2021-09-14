@@ -12,13 +12,18 @@
 #include <stdbool.h>
 #include <string.h>
 #include <poll.h>
+#include <assert.h>
+
+#define kernel_check_size(size) \
+  static_assert(sizeof(arm_kernel) <= size, "Kernel exceeds " #size " bytes")
 
 #include "sdp.h"
 #include "adapter.h"
 
 #include "payloads.h"
 
-#define MAX_KERNEL_BIN_SIZE 871
+#include "arm_kernel/arm_kernel.bin.h"
+kernel_check_size(803); // if we go larger we can't push the payload after pairing
 
 #define PSM_SDP 1
 #define PSM_CTRL 0x11
@@ -245,41 +250,21 @@ int main(int argc, char *argv[])
 
   int failure = 0;
 
-  if (argc != 2 && argc != 3) {
-    printf("usage: %s kernel_binary <wiiu-bdaddr>\n", *argv);
+  if (argc != 1 && argc != 2) {
+    printf("Usage: %s <wiiu-bdaddr>\n\nwiiu-bdaddr: Bluetooth device address of the Wii U (optional)\n", *argv);
     return 1;
   }
 
-  if (argc == 3) {
-    if (bachk(argv[2]) < 0)
+  if (argc == 2) {
+    if (bachk(argv[1]) < 0)
     {
-      printf("usage: %s kernel_binary <wiiu-bdaddr>\n", *argv);
+      printf("Usage: %s <wiiu-bdaddr>\n\nwiiu-bdaddr: Bluetooth device address of the Wii U (optional)\n", *argv);
       return 1;
     }
 
-    str2ba(argv[2], &host_bdaddr);
+    str2ba(argv[1], &host_bdaddr);
     has_host = 1;
   }
-
-  FILE* f = fopen(argv[1], "rb");
-  if (!f) {
-    printf("Cannot open kernel binary\n");
-    return 1;
-  }
-
-  fseek(f, 0, SEEK_END);
-  long kernel_size = ftell(f);
-  rewind(f);
-
-  if (kernel_size > MAX_KERNEL_BIN_SIZE) {
-    printf("Kernel too large\n");
-    fclose(f);
-    return 1;
-  }
-
-  void* kernel_data = malloc(kernel_size);
-  fread(kernel_data, 1, kernel_size, f);
-  fclose(f);
 
   //set up unload signals
   signal(SIGINT, sig_handler);
@@ -289,7 +274,6 @@ int main(int argc, char *argv[])
   if (set_up_device(NULL) < 0)
   {
     printf("failed to set up Bluetooth device\n");
-    free(kernel_data);
     return 1;
   }
 
@@ -423,7 +407,7 @@ int main(int argc, char *argv[])
     {
       if (pfd[5].revents & POLLOUT)
       {
-        int res = upload_to_memory(ARM_KERNEL_LOCATION, kernel_data, kernel_size);
+        int res = upload_to_memory(ARM_KERNEL_LOCATION, arm_kernel, arm_kernel_size);
         if (res != 0) {
           printf("failed to send kernel bin\n");
           break;
@@ -431,7 +415,7 @@ int main(int argc, char *argv[])
 
         printf("kernel bin sent %d\n", res);
 
-        final_rop_chain[184] = kernel_size;
+        final_rop_chain[184] = arm_kernel_size;
 
         for (int i = 0; i < sizeof(final_rop_chain) / 4; i++) {
           final_rop_chain[i] = __builtin_bswap32(final_rop_chain[i]);
@@ -470,8 +454,6 @@ int main(int argc, char *argv[])
   }
 
   printf("cleaning up...\n");
-
-  free(kernel_data);
 
   disconnect();
 

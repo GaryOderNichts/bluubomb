@@ -62,6 +62,8 @@ LIBDIRS	:=
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
+export TARGETNAME := $(TARGET)
+
 export OUTPUT	:= $(CURDIR)/$(TARGET)
 export TOPDIR	:= $(CURDIR)
 
@@ -98,7 +100,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).bin
+	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).bin $(TARGET).bin.h
 
 #---------------------------------------------------------------------------------
 else
@@ -108,13 +110,17 @@ DEPENDS := $(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
-all	:	$(OUTPUT).bin
+all	:	$(OUTPUT).bin.h
 
 $(OUTPUT).elf	:	$(OFILES)
 
 $(OUTPUT).bin: $(OUTPUT).elf
 	@echo "built ... $(notdir $@)"
 	@$(OBJCOPY) -j .text -j .rodata -j .data -O binary $(OUTPUT).elf $@
+
+$(OUTPUT).bin.h: $(OUTPUT).bin
+	@raw2c $<
+	@cp $(TARGETNAME).c $@
 
 $(OFILES_SRC) : $(HFILES_BIN)
 

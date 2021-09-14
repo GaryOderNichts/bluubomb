@@ -12,34 +12,37 @@ Not to be confused with [BlueBomb](https://github.com/Fullmetal5/bluebomb) for t
 - A PC or VM running a version of Linux which is able to run the custom build of BlueZ  
 
 ## How to use
-1. Run `sudo apt install build-essential libbluetooth-dev libglib2.0-dev libdbus-1-dev` to install the required dependencies.
-1. Clone https://github.com/rnconrad/WiimoteEmulator
+1. Run `sudo apt install build-essential libbluetooth-dev libglib2.0-dev libdbus-1-dev git` to install the required dependencies.
+1. Run `git clone https://github.com/rnconrad/WiimoteEmulator && cd WiimoteEmulator`.
 1. Run `source ./build-custom.sh` to build BlueZ.  
-Don't worry if building the emulator itself fails due to missing SDL headers. Just continue with the next steps.
+Don't worry if building the emulator itself fails due to missing SDL headers. Just continue with the next steps.  
 1. Stop the already running bluetooth service `sudo systemctl disable --now bluetooth`
 1. Run the custom built bluetoothd `sudo ./bluez-4.101/dist/sbin/bluetoothd -d -n`
-1. Download the `bluubomb` binary and the kernel binary of your choice from the [releases page](https://github.com/GaryOderNichts/bluubomb/releases).
+1. Download the `bluubomb` binary and the `sd_kernels.zip` from the [releases page](https://github.com/GaryOderNichts/bluubomb/releases).  
+Copy a kernel binary of your choice from the `sd_kernels.zip` to the root of your SD Card and rename it to `bluu_kern.bin`.  
 Take a look at [Kernel binaries](#kernel-binaries) for more information.
-1. Make the bluubomb file executable by running `chmod +x bluubomb`
-1. Power on the Wii U and press the sync button.
-1. Run `sudo ./bluubomb arm_kernel.bin` and wait for the pairing process to complete.  
+1. Power on the Wii U, insert your SD Card and press the sync button.
+1. Open a new terminal and make the bluubomb file executable by running `chmod +x bluubomb`
+1. Run `sudo ./bluubomb` and wait for the pairing process to complete.  
 This might take a minute.  
 If you get a warning about Simple Pairing mode read [the Simple Pairing mode section below](#simple-pairing-mode). 
 
-Write down the Wii U's bd address that should be displayed after the pairing is complete.  
-You can now run `sudo ./bluubomb arm_kernel.bin <bdaddr here>` to connect directly to the Wii U and skip the pairing process.
+Write down the Wii U's bluetooth device address that's displayed after the pairing is complete.  
+You can now run `sudo ./bluubomb <bdaddr here>` to connect directly to the Wii U and skip the pairing process.
 
 ## Kernel binaries
 
-### arm_kernel_loadfile
+### loadrpx.bin
 Launches a launch.rpx from the root of your SD card on the next application launch.
 
-### arm_kernel_fw_launcher
-Launches a fw.img from the root of your SD card on the next OS relaunch (for example when exiting System Settings).  
-
-### arm_kernel_region_free
+### regionfree.bin
 Applies IOSU patches to temporarily remove region restrictions.  
 This should be helpful if you've locked yourself out of your applications due to permanent region modifications.
+
+### wupserver.bin
+Launches a wupserver instance directly after using bluubomb.  
+This gets you full system access remotely via [wupclient](https://github.com/dimok789/mocha/blob/master/ios_mcp/wupclient.py) (replace the IP in line 29 with the one of your Wii U).  
+This works without having to leave the controller pairing screen.
 
 ## Simple Pairing mode
 

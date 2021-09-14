@@ -1,6 +1,12 @@
 #include <stdlib.h>
 #include "imports.h"
 
+#include "mcp.bin.h"
+#include "mcp_syms.h"
+
+extern char __bss_start;
+extern char __bss_end;
+
 static const uint8_t repairData_set_fault_behavior[] = {
     0xE1, 0x2F, 0xFF, 0x1E, 0xE9, 0x2D, 0x40, 0x30, 0xE5, 0x93, 0x20, 0x00, 0xE1, 0xA0, 0x40, 0x00,
     0xE5, 0x92, 0x30, 0x54, 0xE1, 0xA0, 0x50, 0x01, 0xE3, 0x53, 0x00, 0x01, 0x0A, 0x00, 0x00, 0x02,
@@ -29,6 +35,18 @@ static const uint8_t repairData_pad_root_thread[] = {
     0xe5, 0x9f, 0x00, 0x44, 0xeb, 0x01, 0xf9, 0xb0
 };
 
+typedef struct
+{
+    uint32_t paddr;
+    uint32_t vaddr;
+    uint32_t size;
+    uint32_t domain;
+    uint32_t type;
+    uint32_t cached;
+} ios_map_shared_info_t;
+
+#define THUMB_BL(addr, func) ((0xF000F800 | ((((uint32_t)(func) - (uint32_t)(addr) - 4) >> 1) & 0x0FFF)) | ((((uint32_t)(func) - (uint32_t)(addr) - 4) << 4) & 0x7FFF000)) // +-4MB
+
 int _main()
 {
     kernel_flush_dcache(0x081200F0, 0x4001); // giving a size >= 0x4000 flushes all cache
@@ -37,28 +55,46 @@ int _main()
 
     unsigned int control_register = disable_mmu();
 
-    /* Patch kernel_error_handler to BX LR immediately */
-    *(int*) 0x08129A24 = 0xE12FFF1E;
+    // clear our bss
+    kernel_memset(&__bss_start, 0, &__bss_end - &__bss_start);
 
     // recover memory we've overwritten
     kernel_memcpy((void*) 0x081298BC, repairData_set_fault_behavior, sizeof(repairData_set_fault_behavior));
     kernel_memcpy((void*) 0x081296E4, repairData_set_panic_behavior, sizeof(repairData_set_panic_behavior));
     kernel_memcpy((void*) 0x11f00558, repairData_pad_root_thread, sizeof(repairData_pad_root_thread));
 
-    // allow any region title launch
-    *(volatile uint32_t*)(0xE0030498 - 0xE0000000 + 0x12900000) = 0xE3A00000; // mov r0, #0
+    // load the custom ios_mcp
+    kernel_memcpy((void *) (_text_start - 0x05100000 + 0x13d80000), mcp, mcp_size);
+    kernel_memset((void *) (_bss_start  - 0x05000000 + 0x081C0000), 0, _bss_end - _bss_start);
 
-    *(int*) 0x1555500 = 0;
+    // make sure memory is mapped
+    int (*_iosMapSharedUserExecution)(void *descr) = (void*)0x08124F88;
+    ios_map_shared_info_t map_info;
+    map_info.paddr = _bss_start - 0x05000000 + 0x081C0000;
+    map_info.vaddr = _bss_start;
+    map_info.size = 0x3000;
+    map_info.domain = 1;            // MCP
+    map_info.type = 3;              // 0 = undefined, 1 = kernel only, 2 = read only, 3 = read/write
+    map_info.cached = 0xFFFFFFFF;
+    _iosMapSharedUserExecution(&map_info);
 
-    /* REENABLE MMU */
+    map_info.paddr = _text_start - 0x05100000 + 0x13D80000;
+    map_info.vaddr = _text_start;
+    map_info.size = 0x4000;
+    map_info.domain = 1;            // MCP
+    map_info.type = 3;              // 0 = undefined, 1 = kernel only, 2 = read only, 3 = read write
+    map_info.cached = 0xFFFFFFFF;
+    _iosMapSharedUserExecution(&map_info);
+
+    // start wupserver on the next syslog message
+    *(volatile uint32_t *) (0x05029490 - 0x05000000 + 0x081C0000) = THUMB_BL(0x05029490, mcp_receive_message_hook);
+
     restore_mmu(control_register);
 
     kernel_invalidate_dcache(0x081298BC, 0x4001); // giving a size >= 0x4000 invalidates all cache
     kernel_invalidate_icache();
 
     kernel_enable_interrupts(level);
-
-    // kernel_ios_shutdown(1);
 
     return 0;
 }

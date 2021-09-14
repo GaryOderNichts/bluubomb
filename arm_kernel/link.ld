@@ -1,7 +1,6 @@
 OUTPUT_ARCH(arm)
 
-SECTIONS
-{
+SECTIONS {
     . = (0x08135000);
 
     .text : {
@@ -14,13 +13,11 @@ SECTIONS
     .data : {
         *(.data*)
     }
-    .bss : {
+    /* .bss : {
         *(.bss*)
-        *(COMMON*)
-    }
+    } */
 
     /DISCARD/ : {
         *(*);
     }
 }
-
