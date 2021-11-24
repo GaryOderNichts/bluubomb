@@ -235,7 +235,7 @@ static int upload_to_memory(uint32_t dst, const void* data, uint32_t size)
 
     printf("sent %u\r", offset);
     fflush(stdout);
-    usleep(1000);
+    usleep(1000 * 100);
   }
 
   printf("\n");
@@ -414,6 +414,7 @@ int main(int argc, char *argv[])
         }
 
         printf("kernel bin sent %d\n", res);
+        usleep(1000 * 100);
 
         final_rop_chain[184] = arm_kernel_size;
 
@@ -428,6 +429,7 @@ int main(int argc, char *argv[])
         }
 
         printf("rop sent %d\n", res);
+        usleep(1000 * 100);
 
         res = send(int_fd, stackpivot_payload, sizeof(stackpivot_payload), 0);
         if (res != sizeof(stackpivot_payload)) {
