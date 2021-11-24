@@ -413,7 +413,7 @@ int main(int argc, char *argv[])
           break;
         }
 
-        printf("kernel bin sent %d\n", res);
+        printf("kernel bin sent\n");
         usleep(1000 * 100);
 
         final_rop_chain[184] = arm_kernel_size;
@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
           break;
         }
 
-        printf("rop sent %d\n", res);
+        printf("rop sent\n");
         usleep(1000 * 100);
 
         res = send(int_fd, stackpivot_payload, sizeof(stackpivot_payload), 0);
@@ -437,7 +437,7 @@ int main(int argc, char *argv[])
           break;
         }
 
-        printf("pivot sent %d\n", res);
+        printf("pivot (size %d) sent\n", res);
         running = false;
       }
       else

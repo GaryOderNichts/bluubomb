@@ -15,8 +15,8 @@ arm_user:
 arm_kernel:
 	@$(MAKE) -j1 --no-print-directory -C arm_kernel
 
-bluubomb: bluubomb.c adapter.c bdaddr.c sdp.c
-	gcc -std=gnu11 -Wall -o bluubomb bluubomb.c adapter.c bdaddr.c sdp.c -lbluetooth
+bluubomb: bluubomb.c adapter.c sdp.c
+	gcc -std=gnu11 -Wall -o bluubomb bluubomb.c adapter.c sdp.c -lbluetooth
 
 sd_kernels:
 	@echo Building SD kernels...
