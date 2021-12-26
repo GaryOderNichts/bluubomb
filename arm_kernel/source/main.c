@@ -13,7 +13,7 @@ int kernel_syscall_0x81(void* ptr, uint32_t size)
     kernel_memcpy((void*) SD_KERNEL_CODE_LOCATION, ptr, size);
 
     // jump to it
-    ((void (*)(void)) 0x08135400)();
+    ((void (*)(void)) SD_KERNEL_CODE_LOCATION)();
 
     return 0;
 }

