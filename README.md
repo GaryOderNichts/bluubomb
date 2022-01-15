@@ -44,6 +44,11 @@ Launches a wupserver instance directly after using bluubomb.
 This gets you full system access remotely via [wupclient](https://github.com/dimok789/mocha/blob/master/ios_mcp/wupclient.py) (replace the IP in line 29 with the one of your Wii U).  
 This works without having to leave the controller pairing screen.
 
+### install_wup.bin
+Installs a valid signed WUP.  
+To use it copy the WUP to the `install` folder on the root of your SD Card, then run bluubomb.  
+On success the console will reboot, on failure it will power off.
+
 ## Simple Pairing mode
 
 On some devices the simple pairing mode can't be disabled by bluubomb.  
