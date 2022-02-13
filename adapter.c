@@ -271,6 +271,20 @@ int set_up_device(char * dev_str)
     return -1;
   }
 
+  ret = ioctl(dd, HCIDEVDOWN, device_id);
+  if (ret < 0)
+  {
+    fprintf(stderr, "Can't down device hci%d: %s (%d)\n",
+      device_id, strerror(errno), errno);
+  }
+
+  ret = ioctl(dd, HCIDEVUP, device_id);
+  if (ret < 0)
+  {
+    fprintf(stderr, "Can't init device hci%d: %s (%d)\n",
+      device_id, strerror(errno), errno);
+  }
+
   ret = set_up_device_name(dd);
   if (ret < 0)
   {
