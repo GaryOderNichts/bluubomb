@@ -21,7 +21,7 @@ Don't worry if building the emulator itself fails due to missing SDL headers. Ju
 1. Download the `bluubomb` binary and the `sd_kernels.zip` from the [releases page](https://github.com/GaryOderNichts/bluubomb/releases).  
 Copy a kernel binary of your choice from the `sd_kernels.zip` to the root of your SD Card and rename it to `bluu_kern.bin`.  
 Take a look at [Kernel binaries](#kernel-binaries) for more information.
-1. Power on the Wii U, insert your SD Card and press the sync button.
+1. Power on the Wii U, insert your SD Card and press the sync button. Make sure there are no other controllers connected.
 1. Open a new terminal and make the bluubomb file executable by running `chmod +x bluubomb`
 1. Run `sudo ./bluubomb` and wait for the pairing process to complete.  
 This might take a minute.  

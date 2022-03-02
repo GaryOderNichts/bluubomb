@@ -1,5 +1,7 @@
 OUTPUT_ARCH(arm)
 
+INCLUDE "imports.ld"
+
 SECTIONS {
     . = (0x08135000);
 

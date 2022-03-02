@@ -1,0 +1,15 @@
+PROVIDE(kernel_memcpy = 0x08131D04);
+PROVIDE(kernel_memset = 0x08131DA0);
+PROVIDE(kernel_strncpy = 0x081329B8);
+PROVIDE(kernel_disable_interrupts = 0x0812E778);
+PROVIDE(kernel_enable_interrupts = 0x0812E78C);
+PROVIDE(kernel_bsp_command_5 = 0x0812EC40);
+PROVIDE(kernel_vsnprintf = 0x0813293c);
+PROVIDE(kernel_snprintf = 0x08132988);
+PROVIDE(kernel_strncmp = 0x08132a14);
+PROVIDE(kernel_invalidate_icache = 0x0812DCF0);
+PROVIDE(kernel_invalidate_dcache = 0x08120164);
+PROVIDE(kernel_ios_shutdown = 0xffffdc48);
+PROVIDE(kernel_ios_reset = 0x08129760);
+PROVIDE(kernel_flush_dcache = 0x08120160);
+PROVIDE(setClientCapability = 0x081260a8);

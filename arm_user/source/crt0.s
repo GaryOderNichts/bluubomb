@@ -6,4 +6,10 @@
 .type _main, %function
 
 _start:
-    b _main
+    bl _main
+
+    @ restore the original stack pointer
+    ldr sp, =0x12156424
+
+    @ jump back into the btu_task loop
+    ldr pc, =0x11f1bebc

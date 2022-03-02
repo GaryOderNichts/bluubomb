@@ -11,8 +11,8 @@ int FSA_Mount(int fd, char* device_path, char* volume_path, uint32_t flags, char
 	uint32_t* inbuf = (uint32_t*)inbuf8;
 	uint32_t* outbuf = (uint32_t*)outbuf8;
 
-	_strncpy((char*) &inbuf8[0x04], device_path, 0x27F);
-	_strncpy((char*) &inbuf8[0x284], volume_path, 0x27F);
+	strncpy((char*) &inbuf8[0x04], device_path, 0x27F);
+	strncpy((char*) &inbuf8[0x284], volume_path, 0x27F);
 	inbuf[0x504 / 4] = (uint32_t) flags;
 	inbuf[0x508 / 4] = (uint32_t) arg_string_len;
 

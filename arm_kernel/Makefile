@@ -45,7 +45,7 @@ CFLAGS	:= -Wall -std=gnu11 -Os -flto $(MACHDEP) $(INCLUDE)
 ASFLAGS	:= $(MACHDEP)
 
 LDFLAGS := -nostartfiles -nodefaultlibs -mbig-endian -flto \
-	-Wl,-Map,$(notdir $*.map),-T $(TOPDIR)/link.ld
+	-Wl,-L $(TOPDIR) -Wl,-Map,$(notdir $*.map),-T $(TOPDIR)/link.ld
 
 LIBS	:= -lgcc
 

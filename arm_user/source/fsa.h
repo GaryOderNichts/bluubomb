@@ -16,12 +16,18 @@ typedef struct {
 	uint32_t unk2[0x0D];
 } fileStat_s;
 
+int FSAShimOpen(int *attach);
+int FSAShimClose(int fd);
+
+int FSA_AllocIoBuf(void **outBuf);
+void FSA_FreeIoBuf(void* buf);
+
 int FSA_Mount(int fd, char* device_path, char* volume_path, uint32_t flags, char* arg_string, int arg_string_len);
 
-#define FSA_CloseFile 		((int (*)(int fd, int fileHandle)) 0x11f7fae8)
+int FSA_CloseFile(int fd, int fileHandle);
 
-#define FSA_StatFile  		((int (*)(int fd, int handle, fileStat_s* out_data)) 0x11f7fbc4)
+int FSA_StatFile(int fd, int handle, fileStat_s* out_data);
 
-#define FSA_ReadWriteFile  	((int (*)(int fd, void* data, uint32_t size, uint32_t cnt, int flags, int fileHandle, int read_write_flag)) 0x11f7fccc)
+int FSA_ReadWriteFile(int fd, void* data, uint32_t size, uint32_t cnt, int flags, int fileHandle, int read_write_flag);
 
-#define FSA_OpenFile        ((int (*)(int fd, char* path, char* mode, int* outHandle)) 0x11f80024)
+int FSA_OpenFile(int fd, char* path, char* mode, int* outHandle);
