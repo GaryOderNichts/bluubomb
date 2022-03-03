@@ -55,11 +55,15 @@ int MCP_LoadFile_patch(ipcmessage *msg)
 int MCP_ReadCOSXml_patch(uint32_t u1, uint32_t u2, MCPPPrepareTitleInfo *xmlData)
 {
     int res = real_MCP_ReadCOSXml_patch(u1, u2, xmlData);
-        
+
+    // give title full permission for everything
     for (uint32_t i = 0; i < 19; i++) {                    
         xmlData->permissions[i].mask = 0xFFFFFFFFFFFFFFFF;
     }
 
+    // allow codegen access
+    xmlData->codegen_size = 0x02000000;
+    xmlData->codegen_core = 0x80000001;
+
     return res;
 }
-
